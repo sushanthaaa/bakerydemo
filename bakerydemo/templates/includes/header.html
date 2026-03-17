@@ -49,7 +49,70 @@
                     </svg>
                 </div>
             </form>
+
+            {% load wagtailcore_tags i18n %}
+            <div class="language-switcher" id="language-switcher">
+                {% get_current_language as current_language %}
+                <button type="button" class="language-switcher__toggle" aria-expanded="false" aria-haspopup="true">
+                    <svg class="language-switcher__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="currentColor"/>
+                    </svg>
+                    <span class="language-switcher__current">{{ current_language|upper }}</span>
+                    <svg class="language-switcher__caret" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 4L5 7L8 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <ul class="language-switcher__dropdown" role="menu" hidden>
+                    {% if page %}
+                        <li role="menuitem">
+                            <a href="{% pageurl page %}" class="language-switcher__option language-switcher__option--active">
+                                {% get_language_info for page.locale.language_code as lang %}
+                                {{ lang.name_local }}
+                            </a>
+                        </li>
+                        {% for translation in page.get_translations.live %}
+                            <li role="menuitem">
+                                <a href="{% pageurl translation %}" class="language-switcher__option">
+                                    {% get_language_info for translation.locale.language_code as lang %}
+                                    {{ lang.name_local }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        {% get_available_languages as languages %}
+                        {% for lang_code, lang_name in languages %}
+                            <li role="menuitem">
+                                <a href="/{{ lang_code }}/" class="language-switcher__option{% if lang_code == current_language %} language-switcher__option--active{% endif %}">
+                                    {{ lang_name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+            </div>
         </div>
     </div>
 </header>
 
+<script>
+(function() {
+    var switcher = document.getElementById('language-switcher');
+    if (!switcher) return;
+    var toggle = switcher.querySelector('.language-switcher__toggle');
+    var dropdown = switcher.querySelector('.language-switcher__dropdown');
+    if (!toggle || !dropdown) return;
+
+    toggle.addEventListener('click', function() {
+        var expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!expanded));
+        dropdown.hidden = expanded;
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!switcher.contains(e.target)) {
+            toggle.setAttribute('aria-expanded', 'false');
+            dropdown.hidden = true;
+        }
+    });
+})();
+</script>

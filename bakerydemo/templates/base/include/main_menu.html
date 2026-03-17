@@ -4,11 +4,13 @@
         {% if block.block_type == "item" %}
             {% for link_block in block.value.link %}
                 {% if link_block.block_type == "page" and link_block.value %}
-                    <li class="presentation{% if calling_page and calling_page.url_path|default:'' == link_block.value.url_path|default:'none' %} active{% endif %}">
-                        <a href="{% pageurl link_block.value %}">
-                            {% if block.value.title %}{{ block.value.title }}{% else %}{{ link_block.value.title }}{% endif %}
+                    {% with localized_page=link_block.value.localized %}
+                    <li class="presentation{% if calling_page and calling_page.url_path|default:'' == localized_page.url_path|default:'none' %} active{% endif %}">
+                        <a href="{% pageurl localized_page %}">
+                            {{ localized_page.title }}
                         </a>
                     </li>
+                    {% endwith %}
                 {% elif link_block.block_type == "external_url" %}
                     <li class="presentation">
                         <a href="{{ link_block.value }}" rel="noreferrer" target="_blank">

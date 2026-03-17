@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     "wagtail.search",
     "wagtail.admin",
     "wagtail.api.v2",
-    "wagtail.locales",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.contrib.routable_page",
@@ -60,7 +59,8 @@ INSTALLED_APPS = [
     "wagtail.contrib.typed_table_block",
     "wagtail.contrib.search_promotions",
     "wagtail.contrib.settings",
-    "wagtail.contrib.simple_translation",
+    "wagtail_localize",
+    "wagtail_localize.locales",
     "wagtail.contrib.styleguide",
     "wagtail",
     "rest_framework",
@@ -81,10 +81,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # Uncomment to enable django-debug-toolbar
-    # "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -216,8 +215,8 @@ WAGTAIL_I18N_ENABLED = True
 
 WAGTAIL_CONTENT_LANGUAGES = LANGUAGES = [
     ("en", "English"),
-    ("de", "German"),
-    ("ar", "Arabic"),
+    ("es", "Spanish"),
+    ("fr", "French"),
 ]
 
 WAGTAILIMAGES_AVIF_QUALITY = 60

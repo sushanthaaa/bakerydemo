@@ -12,9 +12,11 @@
                         <li class="footer-menu__item">
                             {% for link_block in item.link %}
                                 {% if link_block.block_type == "page" and link_block.value %}
-                                    <a href="{% pageurl link_block.value %}">
-                                        {% if item.title %}{{ item.title }}{% else %}{{ link_block.value.title }}{% endif %}
+                                    {% with localized_page=link_block.value.localized %}
+                                    <a href="{% pageurl localized_page %}">
+                                        {{ localized_page.title }}
                                     </a>
+                                    {% endwith %}
                                 {% elif link_block.block_type == "external_url" %}
                                     <a href="{{ link_block.value }}" rel="noreferrer" target="_blank">
                                         {{ item.title|default:link_block.value }}

@@ -1,5 +1,9 @@
-import debug_toolbar
+try:
+    import debug_toolbar
+except ImportError:
+    debug_toolbar = None
 from django.conf import settings
+from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.urls import include, path, re_path
 from wagtail import urls as wagtail_urls
@@ -17,15 +21,18 @@ urlpatterns = [
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     re_path(
-        r"^images/([^/]*)/(\d*)/([^/]*)/[^/]*$",
+        r"^images/([^/]*)/(\\d*)/([^/]*)/[^/]*$",
         ServeView.as_view(),
         name="wagtailimages_serve",
     ),
-    path("search/", search_views.search, name="search"),
     path("sitemap.xml", sitemap),
     path("api/v2/", api_router.urls),
-    path("__debug__/", include(debug_toolbar.urls)),
 ]
+
+if debug_toolbar:
+    urlpatterns += [
+        path("__debug__/", include(debug_toolbar.urls)),
+    ]
 
 
 if settings.DEBUG:
@@ -34,7 +41,6 @@ if settings.DEBUG:
     from django.views.generic import TemplateView
     from django.views.generic.base import RedirectView
 
-    # Serve static and media files from development server
     urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [
@@ -44,12 +50,13 @@ if settings.DEBUG:
         )
     ]
 
-    # Add views for testing 404 and 500 templates
     urlpatterns += [
         path("test404/", TemplateView.as_view(template_name="404.html")),
         path("test500/", TemplateView.as_view(template_name="500.html")),
     ]
 
-urlpatterns += [
+urlpatterns += i18n_patterns(
+    path("search/", search_views.search, name="search"),
     path("", include(wagtail_urls)),
-]
+)
+
